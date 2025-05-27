@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento de Consulta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section-title {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Agendamento de Consulta</h1>
+        
+        <form id="agendamentoForm" class="needs-validation" novalidate>
+            <!-- Dados do Paciente -->
+            <div class="section-title">
+                <h3>Dados do Paciente</h3>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nome" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="nome" name="nome" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="sobrenome" class="form-label">Sobrenome</label>
+                    <input type="text" class="form-control" id="sobrenome" name="sobrenome" required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control" id="cpf" name="cpf" placeholder="XXX.XXX.XXX-XX" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="dataNascimento" class="form-label">Data de Nascimento</label>
+                    <input type="date" class="form-control" id="dataNascimento" name="dataNascimento" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <input type="text" class="form-control" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX" required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="cep" class="form-label">CEP</label>
+                    <input type="text" class="form-control" id="cep" name="cep" placeholder="XXXXX-XXX" required>
+                </div>
+                <div class="col-md-8">
+                    <label for="endereco" class="form-label">Endereço</label>
+                    <input type="text" class="form-control" id="endereco" name="endereco" required>
+                </div>
+            </div>
+
+            <!-- Dados da Consulta -->
+            <div class="section-title">
+                <h3>Dados da Consulta</h3>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="clinica" class="form-label">Clínica</label>
+                    <input type="text" class="form-control" id="clinica" name="clinica" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="especialidade" class="form-label">Especialidade</label>
+                    <input type="text" class="form-control" id="especialidade" name="especialidade" required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="dataHoraAgendamento" class="form-label">Data e Hora do Agendamento</label>
+                    <input type="datetime-local" class="form-control" id="dataHoraAgendamento" name="dataHoraAgendamento" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="observacao" class="form-label">Observação</label>
+                    <textarea class="form-control" id="observacao" name="observacao" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="text-center mb-5">
+                <button type="submit" class="btn btn-primary">Agendar Consulta</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('agendamentoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+                
+                const response = await fetch('/agendamento', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('Agendamento realizado com sucesso!');
+                    e.target.reset();
+                } else {
+                    const errors = result.errors.map(error => error.msg).join('\n');
+                    alert('Erro no agendamento:\n' + errors);
+                }
+            } catch (error) {
+                alert('Erro ao processar o agendamento. Tente novamente.');
+                console.error(error);
+            }
+        });
+
+        // Máscaras para os campos
+        document.getElementById('cpf').addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                e.target.value = value;
+            }
+        });
+
+        document.getElementById('telefone').addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                e.target.value = value;
+            }
+        });
+
+        document.getElementById('cep').addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 8) {
+                value = value.replace(/(\d{5})(\d{3})/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+    </script>
+</body>
+</html> 

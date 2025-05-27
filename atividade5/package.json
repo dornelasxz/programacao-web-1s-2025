@@ -1,0 +1,21 @@
+{
+    "name": "app_agendamento_consulta",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+      "start": "node index.js",
+      "dev": "nodemon index.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+      "express": "^4.21.2",
+      "ejs": "^3.1.9",
+      "body-parser": "^1.20.2",
+      "express-validator": "^7.0.1"
+    },
+    "devDependencies": {
+      "nodemon": "^3.0.2"
+    }
+}
